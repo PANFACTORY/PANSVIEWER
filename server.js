@@ -1,27 +1,29 @@
-var http = require('http');
-var fs = require('fs')
-var url = require('url');
+const express = require('express');
+const bodyParser = require('body-parser');
+const sqlite = require('sqlite3').verbose();
 
-http.createServer((req, res) => {
-    let pathname = url.parse(req.url).pathname;
-    console.log(`Request for ${pathname} recieved`);
+const app = express();
 
-    if (pathname == '/') {
-        pathname = '/index.html';
-    }
+app.use(bodyParser.urlencoded({extended : false}));
+app.use(bodyParser.json());
 
-    fs.readFile('docs/' + pathname.substr(1), (err, data) => {
-        if (err) {
-            console.log(err);
+app.get('/', function(req, res) {
+    res.sendFile(__dirname + '/docs/index.html');
+});
 
-            res.writeHead(404, {'Content-Type' : 'text/plain'});
-            res.write('404 - file not found');
-        } else {
-            res.writeHead(200, {'Content-Type' : 'text/html'});
-            res.write(data.toString());
-        }
-        res.end();
+app.post('/', function(req, res) {
+    const db = new sqlite.Database('example.sqlite');
+    db.serialize(() => {
+        db.run('CREATE TABLE IF NOT EXISTS user (name TEXT, age INTEGER)');
+        const stmt = db.prepare('INSERT INTO user VALUES (?, ?)');
+        stmt.run([req.body.name, req.body.age]);
+        stmt.finalize();
     });
-}).listen(3000);
+    db.close();
 
-console.log('server running on port 3000');
+    res.sendFile(__dirname + '/docs/index.html');
+});
+
+app.listen(3000, function() {
+    console.log('Example app listening on port 3000');
+});
