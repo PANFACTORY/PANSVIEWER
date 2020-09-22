@@ -7,7 +7,7 @@ http.createServer((req, res) => {
     console.log(`Request for ${pathname} recieved`);
 
     if (pathname == '/') {
-        pathname = '/index';
+        pathname = '/index.html';
     }
 
     fs.readFile('docs/' + pathname.substr(1), (err, data) => {
