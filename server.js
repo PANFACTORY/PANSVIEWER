@@ -2,9 +2,12 @@ var http = require('http');
 var server = http.createServer();
 
 server.on('request', function(req, res) {
-    res.writeHead(200, {'Content-Type' : 'text/html'});
-    res.write('<h1>hello world<h1>');
-    res.end();
+    if (req.url == '/now') {
+        res.writeHead(200, {'Content-Type' : 'application/json'});
+        res.write(JSON.stringify({ now : new Date() }));
+    } else {
+        res.end('Invalid request');
+    }
 });
 
 server.listen(3000);
