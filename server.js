@@ -1,13 +1,11 @@
 var http = require('http');
-var server = http.createServer();
+var url = require('url');
 
-server.on('request', function(req, res) {
-    if (req.url == '/now') {
-        res.writeHead(200, {'Content-Type' : 'application/json'});
-        res.write(JSON.stringify({ now : new Date() }));
-    } else {
-        res.end('Invalid request');
-    }
-});
+http.createServer((req, res) => {
+    let q = url.parse(req.url, true).query;
+    let msg = `${q.name} is ${q.age} years old`;
 
-server.listen(3000);
+    res.writeHead(200, {'Content-Type' : 'text/plain'})
+    res.write(msg);
+    res.end();
+}).listen(3000);
