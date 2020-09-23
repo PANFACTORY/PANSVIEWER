@@ -1,2 +1,4 @@
 *.sqlite
 node_modules/
+*.jpg
+*.png
