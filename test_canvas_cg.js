@@ -10,7 +10,7 @@ function convertVertex(_vertex, _vertexf, _ctheta, _stheta, _cphi, _sphi) {
 }
 
 // オブジェクト描画関数
-function drawObject(_ctx, _TX, _TY, _vertexes, _faces, _vertexf, _vertexa, _h, _r) {
+function drawObject(_ctx, _TX, _TY, _R, _G, _B, _vertexes, _faces, _vertexf, _vertexa, _h, _r) {
     //  透視変換係数の算出
     var w1 = _vertexa.x - _vertexf.x;
     var w2 = _vertexf.y - _vertexa.y;
@@ -23,7 +23,7 @@ function drawObject(_ctx, _TX, _TY, _vertexes, _faces, _vertexf, _vertexa, _h, _
     var cphi = c/b; 
     var sphi = w2/b;
 
-    // 陰面処理
+    // 陰面処理と濃淡計算
     for (var face of _faces) {
         //  稜線ベクトルの算出
         var e1x = _vertexes[face.vertexes[1]].x - _vertexes[face.vertexes[0]].x;  
@@ -43,28 +43,44 @@ function drawObject(_ctx, _TX, _TY, _vertexes, _faces, _vertexf, _vertexa, _h, _
         //  視線ベクトルと法線ベクトルの内積
         var vn = vx*nx + vy*ny + vz*nz;
         face.normal = vn > 0 ? 1 : (vn == 0 ? 0 : -1); 
+        //　面の濃淡を計算
+        var ct = vn/(Math.sqrt(nx*nx + ny*ny + nz*nz)*Math.sqrt(vx*vx + vy*vy + vz*vz));
+        face.shading = (ct + 1.0)/2.0;
     }
 
     //  スクリーンへの投影と描画
     for (var face of _faces) {
         if (face.normal > 0) {
-            for (var j = 0; j < 3; j++) {
-                // 始点の計算
-                var vertexe0 = convertVertex(_vertexes[face.vertexes[j]], _vertexf, ctheta, stheta, cphi, sphi);
-                var X0 = parseInt(_h*vertexe0.x/vertexe0.z*_r);
-                var Y0 = parseInt(_h*vertexe0.y/vertexe0.z*_r);
+            // 0番目の頂点座標を計算
+            var vertexe0 = convertVertex(_vertexes[face.vertexes[0]], _vertexf, ctheta, stheta, cphi, sphi);
+            var X0 = parseInt(_h*vertexe0.x/vertexe0.z*_r);
+            var Y0 = parseInt(_h*vertexe0.y/vertexe0.z*_r);
 
-                // 終点の計算
-                var vertexe1 = convertVertex(_vertexes[face.vertexes[(j + 1)%3]], _vertexf, ctheta, stheta, cphi, sphi);
-                var X1 = parseInt(_h*vertexe1.x/vertexe1.z*_r);
-                var Y1 = parseInt(_h*vertexe1.y/vertexe1.z*_r);
+            // 1番目の頂点座標を計算
+            var vertexe1 = convertVertex(_vertexes[face.vertexes[1]], _vertexf, ctheta, stheta, cphi, sphi);
+            var X1 = parseInt(_h*vertexe1.x/vertexe1.z*_r);
+            var Y1 = parseInt(_h*vertexe1.y/vertexe1.z*_r);
 
-                // ライン描画svgを使用したほうが良い？
-                _ctx.beginPath();
-                _ctx.moveTo(X0 + TX, -Y0 + TY);
-                _ctx.lineTo(X1 + TX, -Y1 + TY);
-                _ctx.stroke();
-            }
+            // 2番目の頂点座標を計算
+            var vertexe2 = convertVertex(_vertexes[face.vertexes[2]], _vertexf, ctheta, stheta, cphi, sphi);
+            var X2 = parseInt(_h*vertexe2.x/vertexe2.z*_r);
+            var Y2 = parseInt(_h*vertexe2.y/vertexe2.z*_r);
+            
+            //　ペンとブラシを作成
+            var R = parseInt(_R*face.shading);
+            var G = parseInt(_G*face.shading);
+            var B = parseInt(_B*face.shading);
+           
+            // ライン描画svgを使用したほうが良い？
+            _ctx.beginPath();
+            _ctx.moveTo(X0 + _TX, -Y0 + TY);    
+            _ctx.lineTo(X1 + _TX, -Y1 + TY);
+            _ctx.lineTo(X2 + _TX, -Y2 + TY);
+            _ctx.closePath();
+            _ctx.strokeStyle = `rgb(${R}, ${G}, ${B})`;
+		    _ctx.stroke();
+            _ctx.fillStyle = `rgba(${R}, ${G}, ${B}, 1.0)`;
+            _ctx.fill();
         }
     }
 }
@@ -90,26 +106,26 @@ vertexes.push({ x : 0, y : 1, z : 1 });
 vertexes.push({ x : 0, y : 2, z : 1 });
 
 var faces = new Array();
-faces.push({ vertexes : [ 0, 1, 5 ], normal : 1});
-faces.push({ vertexes : [ 1, 4, 5 ], normal : 1});
-faces.push({ vertexes : [ 1, 2, 4 ], normal : 1});
-faces.push({ vertexes : [ 2, 3, 4 ], normal : 1});
-faces.push({ vertexes : [ 2, 6, 3 ], normal : 1}); 
-faces.push({ vertexes : [ 3, 6, 11 ], normal : 1}); 
-faces.push({ vertexes : [ 4, 3, 11 ], normal : 1});
-faces.push({ vertexes : [ 4, 11, 10 ], normal : 1}); 
-faces.push({ vertexes : [ 5, 4, 10 ], normal : 1}); 
-faces.push({ vertexes : [ 5, 10, 9 ], normal : 1}); 
-faces.push({ vertexes : [ 0, 5, 9 ], normal : 1}); 
-faces.push({ vertexes : [ 0, 9, 8 ], normal : 1}); 
-faces.push({ vertexes : [ 1, 7, 6 ], normal : 1}); 
-faces.push({ vertexes : [ 1, 6, 2 ], normal : 1}); 
-faces.push({ vertexes : [ 0, 8, 7 ], normal : 1}); 
-faces.push({ vertexes : [ 0, 7, 1 ], normal : 1}); 
-faces.push({ vertexes : [ 10, 11, 6 ], normal : 1}); 
-faces.push({ vertexes : [ 10, 6, 7 ], normal : 1}); 
-faces.push({ vertexes : [ 8, 9, 7 ], normal : 1}); 
-faces.push({ vertexes : [ 9, 10, 7 ], normal : 1});
+faces.push({ vertexes : [ 0, 1, 5 ], normal : 1, shading : 1 });
+faces.push({ vertexes : [ 1, 4, 5 ], normal : 1, shading : 1 });
+faces.push({ vertexes : [ 1, 2, 4 ], normal : 1, shading : 1 });
+faces.push({ vertexes : [ 2, 3, 4 ], normal : 1, shading : 1 });
+faces.push({ vertexes : [ 2, 6, 3 ], normal : 1, shading : 1 }); 
+faces.push({ vertexes : [ 3, 6, 11 ], normal : 1, shading : 1 }); 
+faces.push({ vertexes : [ 4, 3, 11 ], normal : 1, shading : 1 });
+faces.push({ vertexes : [ 4, 11, 10 ], normal : 1, shading : 1 }); 
+faces.push({ vertexes : [ 5, 4, 10 ], normal : 1, shading : 1 }); 
+faces.push({ vertexes : [ 5, 10, 9 ], normal : 1, shading : 1 }); 
+faces.push({ vertexes : [ 0, 5, 9 ], normal : 1, shading : 1 }); 
+faces.push({ vertexes : [ 0, 9, 8 ], normal : 1, shading : 1 }); 
+faces.push({ vertexes : [ 1, 7, 6 ], normal : 1, shading : 1 }); 
+faces.push({ vertexes : [ 1, 6, 2 ], normal : 1, shading : 1 }); 
+faces.push({ vertexes : [ 0, 8, 7 ], normal : 1, shading : 1 }); 
+faces.push({ vertexes : [ 0, 7, 1 ], normal : 1, shading : 1 }); 
+faces.push({ vertexes : [ 10, 11, 6 ], normal : 1, shading : 1 }); 
+faces.push({ vertexes : [ 10, 6, 7 ], normal : 1, shading : 1 }); 
+faces.push({ vertexes : [ 8, 9, 7 ], normal : 1, shading : 1 }); 
+faces.push({ vertexes : [ 9, 10, 7 ], normal : 1, shading : 1 });
 
 //  条件設定
 var TX = 100;
@@ -120,7 +136,7 @@ var h = 1.0;                                    //  投影面までの距離
 var r = 400;
 
 // オブジェクトの描画
-drawObject(ctx, TX, TY, vertexes, faces, vertexf, vertexa, h, r);
+drawObject(ctx, TX, TY, 0, 0, 255, vertexes, faces, vertexf, vertexa, h, r);
 
 // 書き出し
 canvas.toBuffer((err, buf)=>{
