@@ -12,8 +12,8 @@ function convertVertex(_vertex, _vertexf, _ctheta, _stheta, _cphi, _sphi) {
     return { x : xe0, y : ye0, z : ze0 }
 }
 
-// オブジェクト描画関数
-function drawObject(_vertexes, _faces, _vertexf, _vertexa, _hr) {
+// オブジェクト2D化関数
+function convertObject(_vertexes, _faces, _vertexf, _vertexa, _hr) {
     //　描画用座標配列
     let points = new Array();
 
@@ -125,7 +125,7 @@ io.on('connection', function(socket) {
     socket.on('message', function(msg) {
         const params = JSON.parse(msg);
         console.log(params);
-        io.emit('message', JSON.stringify(drawObject(vertexes, faces, params.vertexf, params.vertexa, params.h*params.r)));
+        io.emit('message', JSON.stringify(convertObject(vertexes, faces, params.vertexf, params.vertexa, params.h*params.r)));
     });
 });
 
