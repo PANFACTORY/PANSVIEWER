@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>socket.io chat</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+</head>
+<body>
+    <canvas id="canvas" width="480" height="360"></canvas>
+    <form id="message_form" action="#">
+        <input id="input_msg" autocomplete="off" />
+        <button>Send</button>
+    </form>
+
+    <script>
+        var socketio = io();
+        $(function() {
+            $('#message_form').submit(function() {
+                socketio.emit('message', $('#input_msg').val());
+                $('#input_msg').val('');
+                return false;
+            });
+            socketio.on('message', function(msg) {
+                const canvas = document.getElementById('canvas');
+                const ctx = canvas.getContext('2d');
+
+                const TX = 200;
+                const TY = 150;
+
+                const R = 255;
+                const G = 255;
+                const B = 0;
+
+                const faces = JSON.parse(msg);
+                for (var face of faces) {
+                    ctx.beginPath();
+                    ctx.moveTo(TX + face.X0, TY + face.Y0);
+                    ctx.lineTo(TX + face.X1, TY + face.Y1);
+                    ctx.lineTo(TX + face.X2, TY + face.Y2);
+                    ctx.closePath();
+                    ctx.strokeStyle = `rgb(${parseInt(R*face.shading)}, ${parseInt(G*face.shading)}, ${parseInt(B*face.shading)})`;
+                    ctx.stroke();
+                    ctx.fillStyle = `rgba(${parseInt(R*face.shading)}, ${parseInt(G*face.shading)}, ${parseInt(B*face.shading)}, 1.0)`;
+                    ctx.fill();
+                }               
+            });
+        });
+    </script>
+</body>
+</html>
