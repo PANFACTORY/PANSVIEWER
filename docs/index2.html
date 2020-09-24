@@ -6,30 +6,55 @@
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 </head>
 <body>
+    <h1>Solid Viewer</h1>
+
     <canvas id="canvas" width="480" height="360"></canvas>
-    <form id="message_form" action="#">
-        <input id="input_msg" autocomplete="off" />
-        <button>Send</button>
-    </form>
+    
+    <div>
+        <div>視点座標</div>
+        <label>x<input type="number" id="input_fx" autocomplete="off" value="8" onchange="onChangeParams()" /></label>
+        <label>y<input type="number" id="input_fy" autocomplete="off" value="4" onchange="onChangeParams()" /></label>
+        <label>z<input type="number" id="input_fz" autocomplete="off" value="7" onchange="onChangeParams()" /></label>
+    </div>
+
+    <div>
+        <div>注視点座標</div>
+        <label>x<input type="number" id="input_ax" autocomplete="off" value="0" onchange="onChangeParams()" /></label>
+        <label>y<input type="number" id="input_ay" autocomplete="off" value="0" onchange="onChangeParams()" /></label>
+        <label>z<input type="number" id="input_az" autocomplete="off" value="0" onchange="onChangeParams()" /></label>
+    </div>
+
+    <div>
+        <div>倍率</div>
+        <label>h<input type="number" id="input_h" autocomplete="off" value="1" onchange="onChangeParams()" /></label>
+        <label>r<input type="number" id="input_r" autocomplete="off" value="400" onchange="onChangeParams()" /></label>
+    </div>
 
     <script>
-        var socketio = io();
-        $(function() {
-            $('#message_form').submit(function() {
-                socketio.emit('message', $('#input_msg').val());
-                $('#input_msg').val('');
-                return false;
+        const socketio = io();
+
+        function onChangeParams() {
+            const msg = JSON.stringify({ 
+                vertexf : { x : $('#input_fx').val(), y : $('#input_fy').val(), z : $('#input_fz').val() },
+                vertexa : { x : $('#input_ax').val(), y : $('#input_ay').val(), z : $('#input_az').val() }, 
+                h : $('#input_h').val(), 
+                r : $('#input_r').val()
             });
+            socketio.emit('message', msg);
+        }
+
+        $(function() {
             socketio.on('message', function(msg) {
                 const canvas = document.getElementById('canvas');
                 const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                const TX = 200;
-                const TY = 150;
+                const TX = canvas.width/2;
+                const TY = canvas.height/2;
 
                 const R = 255;
-                const G = 255;
-                const B = 0;
+                const G = 0;
+                const B = 255;
 
                 const faces = JSON.parse(msg);
                 for (var face of faces) {
@@ -45,6 +70,8 @@
                 }               
             });
         });
+
+        onChangeParams();
     </script>
 </body>
 </html>

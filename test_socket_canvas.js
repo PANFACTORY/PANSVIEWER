@@ -13,7 +13,7 @@ function convertVertex(_vertex, _vertexf, _ctheta, _stheta, _cphi, _sphi) {
 }
 
 // オブジェクト描画関数
-function drawObject(_vertexes, _faces, _vertexf, _vertexa, _h, _r) {
+function drawObject(_vertexes, _faces, _vertexf, _vertexa, _hr) {
     //　描画用座標配列
     let points = new Array();
 
@@ -59,18 +59,18 @@ function drawObject(_vertexes, _faces, _vertexf, _vertexa, _h, _r) {
         if (face.normal > 0) {
             // 0番目の頂点座標を計算
             const vertexe0 = convertVertex(_vertexes[face.vertexes[0]], _vertexf, ctheta, stheta, cphi, sphi);
-            const X0 = parseInt(_h*vertexe0.x/vertexe0.z*_r);
-            const Y0 = parseInt(_h*vertexe0.y/vertexe0.z*_r);
+            const X0 = parseInt(_hr*vertexe0.x/vertexe0.z);
+            const Y0 = parseInt(_hr*vertexe0.y/vertexe0.z);
 
             // 1番目の頂点座標を計算
             const vertexe1 = convertVertex(_vertexes[face.vertexes[1]], _vertexf, ctheta, stheta, cphi, sphi);
-            const X1 = parseInt(_h*vertexe1.x/vertexe1.z*_r);
-            const Y1 = parseInt(_h*vertexe1.y/vertexe1.z*_r);
+            const X1 = parseInt(_hr*vertexe1.x/vertexe1.z);
+            const Y1 = parseInt(_hr*vertexe1.y/vertexe1.z);
 
             // 2番目の頂点座標を計算
             const vertexe2 = convertVertex(_vertexes[face.vertexes[2]], _vertexf, ctheta, stheta, cphi, sphi);
-            const X2 = parseInt(_h*vertexe2.x/vertexe2.z*_r);
-            const Y2 = parseInt(_h*vertexe2.y/vertexe2.z*_r);
+            const X2 = parseInt(_hr*vertexe2.x/vertexe2.z);
+            const Y2 = parseInt(_hr*vertexe2.y/vertexe2.z);
             
             // 計算した座標と濃淡をJSONに書き出す
             points.push({ X0 : X0, Y0 : -Y0, X1 : X1, Y1 : -Y1, X2 : X2, Y2 : -Y2, shading : face.shading });
@@ -117,19 +117,15 @@ faces.push({ vertexes : [ 10, 6, 7 ], normal : 1, shading : 1 });
 faces.push({ vertexes : [ 8, 9, 7 ], normal : 1, shading : 1 }); 
 faces.push({ vertexes : [ 9, 10, 7 ], normal : 1, shading : 1 });
 
-//  条件設定
-let vertexf = { x : 8.0, y : 4.0, z : 7.0 };    //  視点の位置
-let vertexa = { x : 0.0, y : 0.0, z : 0.0 };    //  注視点の位置は原点
-let h = 1.0;                                    //  投影面までの距離
-let r = 400;
-
 app.get('/', function(req, res) {
     res.sendFile(__dirname + '/docs/index2.html');
 });
 
 io.on('connection', function(socket) {
     socket.on('message', function(msg) {
-        io.emit('message', drawObject(vertexes, faces, vertexf, vertexa, h, r));
+        const params = JSON.parse(msg);
+        console.log(params);
+        io.emit('message', drawObject(vertexes, faces, params.vertexf, params.vertexa, params.h*params.r));
     });
 });
 
