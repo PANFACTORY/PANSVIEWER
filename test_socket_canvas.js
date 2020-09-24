@@ -77,7 +77,7 @@ function drawObject(_vertexes, _faces, _vertexf, _vertexa, _hr) {
         }
     }
 
-    return JSON.stringify(points);
+    return points;
 }
 
 // オブジェクトの座標
@@ -125,7 +125,7 @@ io.on('connection', function(socket) {
     socket.on('message', function(msg) {
         const params = JSON.parse(msg);
         console.log(params);
-        io.emit('message', drawObject(vertexes, faces, params.vertexf, params.vertexa, params.h*params.r));
+        io.emit('message', JSON.stringify(drawObject(vertexes, faces, params.vertexf, params.vertexa, params.h*params.r)));
     });
 });
 
