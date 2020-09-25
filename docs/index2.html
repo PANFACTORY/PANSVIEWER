@@ -18,8 +18,8 @@
     <div>
         <div>視点座標</div>
         <label>r<input type="number" id="input_radius" autocomplete="off" value="1" onchange="onChangeParams()" /></label>
-        <label>θ<input type="number" id="input_theta" autocomplete="off" value="10" onchange="onChangeParams()" /></label>
-        <label>φ<input type="number" id="input_phi" autocomplete="off" value="10" onchange="onChangeParams()" /></label>
+        <label>θ<input type="number" id="input_theta" autocomplete="off" value="30" onchange="onChangeParams()" /></label>
+        <label>φ<input type="number" id="input_phi" autocomplete="off" value="100" onchange="onChangeParams()" /></label>
     </div>
 
     <div>
@@ -31,16 +31,19 @@
 
     <div>
         <div>倍率</div>
-        <label>h<input type="number" id="input_h" autocomplete="off" value="1" onchange="onChangeParams()" /></label>
+        <label>h<input type="number" id="input_h" autocomplete="off" value="2" onchange="onChangeParams()" /></label>
         <label>r<input type="number" id="input_r" autocomplete="off" value="400" onchange="onChangeParams()" /></label>
     </div>
 
     <div>
         <div>色</div>
-        <div>color<input type="color" id="input_c" onchange="onChangeParams()" /></div>
+        <div>color<input type="color" id="input_c" value="#11E82B" onchange="onChangeParams()" /></div>
     </div>
 
     <script>
+        const canvas = document.getElementById('canvas');
+        const inputFile = document.getElementById('input_file');
+
         function drawObject(_canvas, _color, _obj) {
             const ctx = _canvas.getContext('2d');
             ctx.clearRect(0, 0, _canvas.width, _canvas.height);
@@ -65,25 +68,19 @@
             }           
         }
 
-        const inputFile = document.getElementById('input_file');
+        function convertPOV(_r, _theta, _phi) {
+            return { x : _r*Math.sin(_theta)*Math.cos(_phi), y : _r*Math.sin(_theta)*Math.sin(_phi), z : _r*Math.cos(_theta) };
+        }
+
         inputFile.addEventListener("change", function(e) {
             const reader = new FileReader();
             reader.readAsBinaryString(e.target.files[0]);
 
-            const r = $('#input_radius').val();
-            const theta = $('#input_theta').val()*(Math.PI/180.0);
-            const phi = $('#input_phi').val()*(Math.PI/180.0);
-
-            const x = r*Math.sin(theta)*Math.cos(phi);
-            const y = r*Math.sin(theta)*Math.sin(phi);
-            const z = r*Math.cos(theta);
-
             const param = JSON.stringify({ 
-                vertexf : { x : x, y : y, z : z },
+                vertexf : convertPOV($('#input_radius').val(), $('#input_theta').val()*(Math.PI/180.0), $('#input_phi').val()*(Math.PI/180.0)),
                 vertexa : { x : $('#input_ax').val(), y : $('#input_ay').val(), z : $('#input_az').val() }, 
                 h : $('#input_h').val(), 
                 r : $('#input_r').val(),
-                rgb : $('#input_c').val(),
             });
 
             reader.onload = function() {
@@ -94,26 +91,17 @@
                     data: { "obj" : reader.result, "param" : param },
                     dataType: 'json',
                 }).done(function(res){
-                    drawObject(document.getElementById('canvas'), $('#input_c').val(), res);  
+                    drawObject(canvas, $('#input_c').val(), res);  
                 });
             }
         }, false);
 
         function onChangeParams() {
-            const r = $('#input_radius').val();
-            const theta = $('#input_theta').val()*(Math.PI/180.0);
-            const phi = $('#input_phi').val()*(Math.PI/180.0);
-
-            const x = r*Math.sin(theta)*Math.cos(phi);
-            const y = r*Math.sin(theta)*Math.sin(phi);
-            const z = r*Math.cos(theta);
-
             const param = JSON.stringify({ 
-                vertexf : { x : x, y : y, z : z },
+                vertexf : convertPOV($('#input_radius').val(), $('#input_theta').val()*(Math.PI/180.0), $('#input_phi').val()*(Math.PI/180.0)),
                 vertexa : { x : $('#input_ax').val(), y : $('#input_ay').val(), z : $('#input_az').val() }, 
                 h : $('#input_h').val(), 
                 r : $('#input_r').val(),
-                rgb : $('#input_c').val(),
             });
             
             $.ajax({
@@ -123,7 +111,7 @@
                 data: { "param" : param },
                 dataType: 'json',
             }).done(function(res){
-                drawObject(document.getElementById('canvas'), $('#input_c').val(), res);  
+                drawObject(canvas, $('#input_c').val(), res);  
             });
         }
     </script>

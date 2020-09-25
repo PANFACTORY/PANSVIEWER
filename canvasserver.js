@@ -19,13 +19,11 @@ app.get('/', function(req, res) {
 app.post('/file', function(req, res) {
     let param = JSON.parse(req.body.param);
     [ vertexes, faces ] = pansload.loadObjectPly(req.body.obj);
-    console.log(vertexes.length, faces.length, param);
     res.send(JSON.stringify(pansconv.convertObject(vertexes, faces, param.vertexf, param.vertexa, param.h*param.r)));
 });
 
 app.post('/param', function(req, res) {
     let param = JSON.parse(req.body.param);
-    console.log(vertexes.length, faces.length, param);
     res.send(JSON.stringify(pansconv.convertObject(vertexes, faces, param.vertexf, param.vertexa, param.h*param.r)));
 });
 
