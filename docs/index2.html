@@ -8,7 +8,13 @@
 <body>
     <h1>PANSVIEWER</h1>
 
-    <canvas id="canvas" width="480" height="360"></canvas>
+    <div>
+        <input type="file" id="input_file" />
+    </div>
+
+    <div>
+        <canvas id="canvas" width="480" height="360"></canvas>
+    </div>
     
     <div>
         <div>視点座標</div>
@@ -38,18 +44,44 @@
     <script>
         const socketio = io();
 
+        const inputFile = document.getElementById('input_file');
+        inputFile.addEventListener("change", function(e) {
+            const reader = new FileReader();
+            reader.readAsBinaryString(e.target.files[0]);
+            reader.onload = function() {
+                socketio.emit('file', reader.result);
+            }
+            
+            //onChangeParams();
+        }, false);
+
         function onChangeParams() {
             const msg = JSON.stringify({ 
                 vertexf : { x : $('#input_fx').val(), y : $('#input_fy').val(), z : $('#input_fz').val() },
                 vertexa : { x : $('#input_ax').val(), y : $('#input_ay').val(), z : $('#input_az').val() }, 
                 h : $('#input_h').val(), 
                 r : $('#input_r').val(),
+                rgb : $('#input_c').val(),
             });
-            socketio.emit('message', msg);
+            socketio.emit('param', msg);
         }
 
         $(function() {
-            socketio.on('message', function(msg) {
+            socketio.on('param', function(msg) {
+                const params = JSON.parse(msg);
+                console.log(params);
+                $('#input_fx').val(params.vertexf.x);
+                $('#input_fy').val(params.vertexf.y);
+                $('#input_fz').val(params.vertexf.z);
+                $('#input_ax').val(params.vertexa.x);
+                $('#input_ay').val(params.vertexa.y);
+                $('#input_az').val(params.vertexa.z);
+                $('#input_h').val(params.h);
+                $('#input_r').val(params.r);
+                $('#input_c').val(params.rgb);
+            });
+
+            socketio.on('obj', function(msg) {
                 const canvas = document.getElementById('canvas');
                 const ctx = canvas.getContext('2d');
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -75,8 +107,6 @@
                 }               
             });
         });
-
-        onChangeParams();
     </script>
 </body>
 </html>

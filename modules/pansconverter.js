@@ -1,9 +1,3 @@
-const express = require('express');
-const app = express();
-const http = require('http').Server(app);
-const io = require('socket.io')(http);
-const PORT = process.env.PORT || 7000;
-
 // 座標変換関数
 function convertVertex(_vertex, _vertexf, _ctheta, _stheta, _cphi, _sphi) {
     const xe0 = (_vertex.x - _vertexf.x)*_ctheta + (_vertex.z - _vertexf.z)*_stheta;
@@ -13,7 +7,7 @@ function convertVertex(_vertex, _vertexf, _ctheta, _stheta, _cphi, _sphi) {
 }
 
 // オブジェクト2D化関数
-function convertObject(_vertexes, _faces, _vertexf, _vertexa, _hr) {
+exports.convertObject = function (_vertexes, _faces, _vertexf, _vertexa, _hr) {
     //　描画用座標配列
     let points = new Array();
 
@@ -79,56 +73,3 @@ function convertObject(_vertexes, _faces, _vertexf, _vertexa, _hr) {
 
     return points;
 }
-
-// オブジェクトの座標
-let vertexes = new Array();
-vertexes.push({ x : 1, y : 0, z : 2 });
-vertexes.push({ x : 1, y : 0, z : 0 });
-vertexes.push({ x : 1, y : 2, z : 0 });
-vertexes.push({ x : 1, y : 2, z : 1 });
-vertexes.push({ x : 1, y : 1, z : 1 });
-vertexes.push({ x : 1, y : 1, z : 2 });
-vertexes.push({ x : 0, y : 2, z : 0 });
-vertexes.push({ x : 0, y : 0, z : 0 });
-vertexes.push({ x : 0, y : 0, z : 2 });
-vertexes.push({ x : 0, y : 1, z : 2 });
-vertexes.push({ x : 0, y : 1, z : 1 });
-vertexes.push({ x : 0, y : 2, z : 1 });
-
-let faces = new Array();
-faces.push({ vertexes : [ 0, 1, 5 ], normal : 1, shading : 1 });
-faces.push({ vertexes : [ 1, 4, 5 ], normal : 1, shading : 1 });
-faces.push({ vertexes : [ 1, 2, 4 ], normal : 1, shading : 1 });
-faces.push({ vertexes : [ 2, 3, 4 ], normal : 1, shading : 1 });
-faces.push({ vertexes : [ 2, 6, 3 ], normal : 1, shading : 1 }); 
-faces.push({ vertexes : [ 3, 6, 11 ], normal : 1, shading : 1 }); 
-faces.push({ vertexes : [ 4, 3, 11 ], normal : 1, shading : 1 });
-faces.push({ vertexes : [ 4, 11, 10 ], normal : 1, shading : 1 }); 
-faces.push({ vertexes : [ 5, 4, 10 ], normal : 1, shading : 1 }); 
-faces.push({ vertexes : [ 5, 10, 9 ], normal : 1, shading : 1 }); 
-faces.push({ vertexes : [ 0, 5, 9 ], normal : 1, shading : 1 }); 
-faces.push({ vertexes : [ 0, 9, 8 ], normal : 1, shading : 1 }); 
-faces.push({ vertexes : [ 1, 7, 6 ], normal : 1, shading : 1 }); 
-faces.push({ vertexes : [ 1, 6, 2 ], normal : 1, shading : 1 }); 
-faces.push({ vertexes : [ 0, 8, 7 ], normal : 1, shading : 1 }); 
-faces.push({ vertexes : [ 0, 7, 1 ], normal : 1, shading : 1 }); 
-faces.push({ vertexes : [ 10, 11, 6 ], normal : 1, shading : 1 }); 
-faces.push({ vertexes : [ 10, 6, 7 ], normal : 1, shading : 1 }); 
-faces.push({ vertexes : [ 8, 9, 7 ], normal : 1, shading : 1 }); 
-faces.push({ vertexes : [ 9, 10, 7 ], normal : 1, shading : 1 });
-
-app.get('/', function(req, res) {
-    res.sendFile(__dirname + '/docs/index2.html');
-});
-
-io.on('connection', function(socket) {
-    socket.on('message', function(msg) {
-        const params = JSON.parse(msg);
-        console.log(params);
-        io.emit('message', JSON.stringify(convertObject(vertexes, faces, params.vertexf, params.vertexa, params.h*params.r)));
-    });
-});
-
-http.listen(PORT, function() {
-    console.log('server listening. Port:' + PORT);
-});
