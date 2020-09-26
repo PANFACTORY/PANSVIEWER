@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>PANSVIEWER</title>
+</head>
+<body>
+    <h1>PANSVIEWER</h1>
+    <script>
+        async function fn() {
+            let user = {
+                name : 'John',
+                surname : 'Smith',
+            };
+
+            let response = await fetch('http://localhost:7000/', {
+                method : 'POST',
+                headers : { 'Content-Type' : 'application/json;charset=utf-8' },
+                body : JSON.stringify(user)
+            });
+
+            let result = await response.json();
+            console.log(result);
+        }
+
+        fn();
+    </script>
+</body>
+</html>
