@@ -1,18 +1,21 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const app = express();
+const multer = require('multer');
 
-app.use(bodyParser.urlencoded({ extended: true }));
+const app = express();
+const upload = multer({ dest : __dirname + '/uploads/', inMemory : true }); 
+
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended : true }));
 app.use(bodyParser.text());
 
 app.get('/', function(req, res) {
     res.sendFile(__dirname + '/docs/index3.html');
 });
 
-app.post('/', function(req, res) {
-    console.log(req.body);
-    res.json(req.body);
+app.post('/', upload.single('upl'), function(req, res) {
+    console.log(req.file.filename);
+    res.json(JSON.stringify({ filename : req.file.filename }));
 });
 
 app.listen(7000, function() {
