@@ -1,9 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const multer = require('multer');
+const fs = require('fs');
 
 const app = express();
-const upload = multer({ dest : __dirname + '/uploads/', inMemory : true }); 
+const upload = multer({ dest : __dirname + '/uploads/' }); 
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended : true }));
@@ -14,7 +15,8 @@ app.get('/', function(req, res) {
 });
 
 app.post('/', upload.single('upl'), function(req, res) {
-    console.log(req.file.filename);
+    console.log(fs.readFileSync(__dirname + '/uploads/' + req.file.filename, 'utf-8'));
+    fs.unlinkSync(__dirname + '/uploads/' + req.file.filename);
     res.json(JSON.stringify({ filename : req.file.filename }));
 });
 

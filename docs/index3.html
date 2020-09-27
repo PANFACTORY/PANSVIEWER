@@ -20,11 +20,7 @@
                 method: 'POST',
                 body: data,
             }).then((res)=>{
-                return( res.json() );
-            }).then((json)=>{
-                // 通信が成功した際の処理
-            }).catch((error)=>{
-                // エラー処理
+                console.log(res.json());
             });
         });
     </script>
