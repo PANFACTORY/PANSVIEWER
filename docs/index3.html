@@ -45,6 +45,23 @@
             return { x : _r*Math.sin(_theta)*Math.cos(_phi), y : _r*Math.sin(_theta)*Math.sin(_phi), z : _r*Math.cos(_theta) };
         }
 
+        function getParams() {
+            return { 
+                vertexf : convertPOV(
+                    document.getElementById("input_radius").value, 
+                    document.getElementById("input_theta").value*(Math.PI/180.0), 
+                    document.getElementById("input_phi").value*(Math.PI/180.0)
+                ),
+                vertexa : { 
+                    x : document.getElementById("input_ax").value, 
+                    y : document.getElementById("input_ay").value, 
+                    z : document.getElementById("input_az").value
+                }, 
+                h : document.getElementById("input_h").value, 
+                r : document.getElementById("input_r").value,
+            };
+        }
+
         function drawObject(_canvas, _color, _obj) {
             const ctx = _canvas.getContext('2d');
             ctx.clearRect(0, 0, _canvas.width, _canvas.height);
@@ -72,23 +89,8 @@
         async function onChangeFile() {
             const files = document.getElementById('input_file').files;
             if (files.length) {
-                const params = JSON.stringify({ 
-                    vertexf : convertPOV(
-                        document.getElementById("input_radius").value, 
-                        document.getElementById("input_theta").value*(Math.PI/180.0), 
-                        document.getElementById("input_phi").value*(Math.PI/180.0)
-                    ),
-                    vertexa : { 
-                        x : document.getElementById("input_ax").value, 
-                        y : document.getElementById("input_ay").value, 
-                        z : document.getElementById("input_az").value
-                    }, 
-                    h : document.getElementById("input_h").value, 
-                    r : document.getElementById("input_r").value,
-                });
-
                 let data = new FormData();
-                data.append('params', params);
+                data.append('params', JSON.stringify(getParams()));
                 data.append('model', files[0], 'modelfile');
 
                 let response = await fetch('http://localhost:7000/', {
@@ -102,23 +104,8 @@
         }
 
         async function onChangeParams() {
-            const params = JSON.stringify({ 
-                vertexf : convertPOV(
-                    document.getElementById("input_radius").value, 
-                    document.getElementById("input_theta").value*(Math.PI/180.0), 
-                    document.getElementById("input_phi").value*(Math.PI/180.0)
-                ),
-                vertexa : { 
-                    x : document.getElementById("input_ax").value, 
-                    y : document.getElementById("input_ay").value, 
-                    z : document.getElementById("input_az").value
-                }, 
-                h : document.getElementById("input_h").value, 
-                r : document.getElementById("input_r").value,
-            });
-
             let data = new FormData();
-            data.append('params', params);
+            data.append('params', JSON.stringify(getParams()));
 
             let response = await fetch('http://localhost:7000/params', {
                 method: 'POST',
