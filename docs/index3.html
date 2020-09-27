@@ -6,24 +6,25 @@
 </head>
 <body>
     <h1>PANSVIEWER</h1>
+
     <script>
-        async function fn() {
-            let user = {
-                name : 'John',
-                surname : 'Smith',
-            };
+        window.onload = ()=>{
+            let data = new FormData();
+            data.append('name', 'Taro');
 
-            let response = await fetch('http://localhost:7000/', {
-                method : 'POST',
-                headers : { 'Content-Type' : 'application/json;charset=utf-8' },
-                body : JSON.stringify(user)
+            // アップロードする
+            fetch('http://localhost:7000/', {
+                method: "POST",
+                //headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+                body: "abc",
+            }).then((res)=>{
+                return( res.json() );
+            }).then((json)=>{
+                // 通信が成功した際の処理
+            }).catch((error)=>{
+                // エラー処理
             });
-
-            let result = await response.json();
-            console.log(result);
-        }
-
-        fn();
+        };
     </script>
 </body>
 </html>
