@@ -1,8 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const multer = require('multer');
-const pansload = require('./server/pansloader');
-const pansconv = require('./server/pansconverter');
+const pansload = require('./server/fileloader');
+const pansconv = require('./server/render');
 const PORT = process.env.PORT || 7000;
 
 const app = express();
@@ -22,7 +22,7 @@ let faces = new Array();
 
 app.post('/loadmodel', upload.single('model'), function(req, res) {
     let params = JSON.parse(req.body.params);
-    [ vertexes, faces ] = pansload.loadObjectPly(req.file.buffer.toString());
+    [ vertexes, faces ] = pansload.loadObjectFromPly(req.file.buffer.toString());
     res.send(JSON.stringify(pansconv.convertObject(vertexes, faces, params.vertexf, params.vertexa, params.h*params.r)));
 });
 

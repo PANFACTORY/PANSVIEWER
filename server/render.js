@@ -66,7 +66,7 @@ exports.convertObject = function (_vertexes, _faces, _vertexf, _vertexa, _hr) {
             const X2 = parseInt(_hr*vertexe2.x/vertexe2.z);
             const Y2 = parseInt(_hr*vertexe2.y/vertexe2.z);
             
-            // 計算した座標と濃淡をJSONに書き出す
+            // 計算した座標と濃淡を書き出す
             points.push({ X0 : X0, Y0 : -Y0, X1 : X1, Y1 : -Y1, X2 : X2, Y2 : -Y2, shading : face.shading });
         }
     }
