@@ -50,7 +50,7 @@ async function onChangeFile() {
         data.append('params', JSON.stringify(getParams()));
         data.append('model', files[0], 'modelfile');
 
-        let response = await fetch('http://localhost:7000/loadmodel', {
+        let response = await fetch('./loadmodel', {
             method: 'POST',
             body: data,
         });
@@ -64,7 +64,7 @@ async function onChangeParams() {
     let data = new FormData();
     data.append('params', JSON.stringify(getParams()));
 
-    let response = await fetch('http://localhost:7000/params', {
+    let response = await fetch('./params', {
         method: 'POST',
         body: data,
     });
