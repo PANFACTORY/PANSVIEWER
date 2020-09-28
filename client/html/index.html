@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <script src="client/js/pansview.js"></script>
+    <title>PANSVIEWER</title>
+</head>
+<body>
+    <div>
+        <input type="file" id="input_file" onchange="onChangeFile()" />
+    </div>
+
+    <div>
+        <canvas id="canvas" width="480" height="360"></canvas>
+    </div>
+    
+    <div>
+        <div>視点座標</div>
+        <label>r<input type="number" id="input_radius" autocomplete="off" value="1" onchange="onChangeParams()" /></label>
+        <label>θ<input type="number" id="input_theta" autocomplete="off" value="30" onchange="onChangeParams()" /></label>
+        <label>φ<input type="number" id="input_phi" autocomplete="off" value="100" onchange="onChangeParams()" /></label>
+    </div>
+
+    <div>
+        <div>注視点座標</div>
+        <label>x<input type="number" id="input_ax" autocomplete="off" value="0" onchange="onChangeParams()" /></label>
+        <label>y<input type="number" id="input_ay" autocomplete="off" value="0" onchange="onChangeParams()" /></label>
+        <label>z<input type="number" id="input_az" autocomplete="off" value="0" onchange="onChangeParams()" /></label>
+    </div>
+
+    <div>
+        <div>倍率</div>
+        <label>h<input type="number" id="input_h" autocomplete="off" value="2" onchange="onChangeParams()" /></label>
+        <label>r<input type="number" id="input_r" autocomplete="off" value="400" onchange="onChangeParams()" /></label>
+    </div>
+
+    <div>
+        <div>色</div>
+        <div>color<input type="color" id="input_c" value="#11E82B" onchange="onChangeParams()" /></div>
+    </div>
+</body>
+</html>

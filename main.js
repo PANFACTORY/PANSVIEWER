@@ -1,19 +1,20 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const multer = require('multer');
-const pansload = require('./modules/pansloader');
-const pansconv = require('./modules/pansconverter');
+const pansload = require('./server/pansloader');
+const pansconv = require('./server/pansconverter');
 const PORT = process.env.PORT || 7000;
 
 const app = express();
-const upload = multer({ storage : multer.memoryStorage() }); 
+app.use("/client", express.static('./client/'));
 
+const upload = multer({ storage : multer.memoryStorage() }); 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended : true }));
 app.use(bodyParser.text());
 
 app.get('/', function(req, res) {
-    res.sendFile(__dirname + '/docs/index3.html');
+    res.sendFile(`${__dirname}/client/html/index.html`);
 });
 
 let vertexes = new Array();
