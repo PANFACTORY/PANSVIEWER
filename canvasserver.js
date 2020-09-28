@@ -20,7 +20,7 @@ app.get('/', function(req, res) {
 let vertexes = new Array();
 let faces = new Array();
 
-app.post('/', upload.single('model'), function(req, res) {
+app.post('/loadmodel', upload.single('model'), function(req, res) {
     let params = JSON.parse(req.body.params);
     let rawdata = fs.readFileSync(__dirname + '/uploads/' + req.file.filename, 'utf-8');
 
