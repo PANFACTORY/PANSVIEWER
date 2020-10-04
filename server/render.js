@@ -1,5 +1,5 @@
-// 座標変換関数
-function convertVertex(_vertex, _vertexf, _ctheta, _stheta, _cphi, _sphi) {
+// ビュー変換
+function viewingConversion(_vertex, _vertexf, _ctheta, _stheta, _cphi, _sphi) {
     const xe0 = (_vertex.x - _vertexf.x)*_ctheta + (_vertex.z - _vertexf.z)*_stheta;
     const ye0 = (_vertex.x - _vertexf.x)*_stheta*_sphi + (_vertex.y - _vertexf.y)*_cphi - (_vertex.z - _vertexf.z)*_ctheta*_sphi;
     const ze0 = (_vertex.x - _vertexf.x)*_stheta*_cphi - (_vertex.y - _vertexf.y)*_sphi - (_vertex.z - _vertexf.z)*_ctheta*_cphi;
@@ -52,17 +52,17 @@ exports.convertObject = function (_vertexes, _faces, _vertexf, _vertexa, _hr) {
     for (let face of _faces) {
         if (face.normal > 0) {
             // 0番目の頂点座標を計算
-            const vertexe0 = convertVertex(_vertexes[face.vertexes[0]], _vertexf, ctheta, stheta, cphi, sphi);
+            const vertexe0 = viewingConversion(_vertexes[face.vertexes[0]], _vertexf, ctheta, stheta, cphi, sphi);
             const X0 = parseInt(_hr*vertexe0.x/vertexe0.z);
             const Y0 = parseInt(_hr*vertexe0.y/vertexe0.z);
 
             // 1番目の頂点座標を計算
-            const vertexe1 = convertVertex(_vertexes[face.vertexes[1]], _vertexf, ctheta, stheta, cphi, sphi);
+            const vertexe1 = viewingConversion(_vertexes[face.vertexes[1]], _vertexf, ctheta, stheta, cphi, sphi);
             const X1 = parseInt(_hr*vertexe1.x/vertexe1.z);
             const Y1 = parseInt(_hr*vertexe1.y/vertexe1.z);
 
             // 2番目の頂点座標を計算
-            const vertexe2 = convertVertex(_vertexes[face.vertexes[2]], _vertexf, ctheta, stheta, cphi, sphi);
+            const vertexe2 = viewingConversion(_vertexes[face.vertexes[2]], _vertexf, ctheta, stheta, cphi, sphi);
             const X2 = parseInt(_hr*vertexe2.x/vertexe2.z);
             const Y2 = parseInt(_hr*vertexe2.y/vertexe2.z);
             
