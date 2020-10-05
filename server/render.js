@@ -1,8 +1,8 @@
 // ビュー変換
 function viewingConversion(_vertex, _vertexf, _ctheta, _stheta, _cphi, _sphi) {
-    const xe0 = (_vertex.x - _vertexf.x)*_ctheta + (_vertex.z - _vertexf.z)*_stheta;
-    const ye0 = (_vertex.x - _vertexf.x)*_stheta*_sphi + (_vertex.y - _vertexf.y)*_cphi - (_vertex.z - _vertexf.z)*_ctheta*_sphi;
-    const ze0 = (_vertex.x - _vertexf.x)*_stheta*_cphi - (_vertex.y - _vertexf.y)*_sphi - (_vertex.z - _vertexf.z)*_ctheta*_cphi;
+    const xe0 = (_vertex.x - _vertexf.x)*_ctheta - (_vertex.z - _vertexf.z)*_stheta;
+    const ye0 = (_vertex.x - _vertexf.x)*_stheta*_sphi + (_vertex.y - _vertexf.y)*_cphi + (_vertex.z - _vertexf.z)*_ctheta*_sphi;
+    const ze0 = -(_vertex.x - _vertexf.x)*_stheta*_cphi + (_vertex.y - _vertexf.y)*_sphi - (_vertex.z - _vertexf.z)*_ctheta*_cphi;
     return { x : xe0, y : ye0, z : ze0 }
 }
 
@@ -24,14 +24,12 @@ exports.convertObject = function (_vertexes, _faces, _vertexf, _vertexa, _hr) {
     const sinbeta = -vy/vnorm;
 
     // 座標軸
-    const e0 = viewingConversion({ x : 0.0, y : 0.0, z : 0.0 }, _vertexf, cosalpha, sinalpha, cosbeta, sinbeta);
-    picture.coordinate.push({ X : e0.x/e0.z, Y : e0.y/e0.z });
-    const ex = viewingConversion({ x : 1.0, y : 0.0, z : 0.0 }, _vertexf, cosalpha, sinalpha, cosbeta, sinbeta);
-    picture.coordinate.push({ X : ex.x/ex.z, Y : ex.y/ex.z });
-    const ey = viewingConversion({ x : 0.0, y : 1.0, z : 0.0 }, _vertexf, cosalpha, sinalpha, cosbeta, sinbeta);
-    picture.coordinate.push({ X : ey.x/ey.z, Y : ey.y/ey.z });
-    const ez = viewingConversion({ x : 0.0, y : 0.0, z : 1.0 }, _vertexf, cosalpha, sinalpha, cosbeta, sinbeta);
-    picture.coordinate.push({ X : ez.x/ez.z, Y : ez.y/ez.z });
+    const ex = viewingConversion({ x : 1.0 + _vertexf.x, y : 0.0 + _vertexf.y, z : 0.0 + _vertexf.z }, _vertexf, cosalpha, sinalpha, cosbeta, sinbeta);
+    picture.coordinate.push({ X : ex.x, Y : ex.y });
+    const ey = viewingConversion({ x : 0.0 + _vertexf.x, y : 1.0 + _vertexf.y, z : 0.0 + _vertexf.z }, _vertexf, cosalpha, sinalpha, cosbeta, sinbeta);
+    picture.coordinate.push({ X : ey.x, Y : ey.y });
+    const ez = viewingConversion({ x : 0.0 + _vertexf.x, y : 0.0 + _vertexf.y, z : 1.0 + _vertexf.z }, _vertexf, cosalpha, sinalpha, cosbeta, sinbeta);
+    picture.coordinate.push({ X : ez.x, Y : ez.y });
 
     // 陰面処理と濃淡計算
     for (let face of _faces) {
@@ -59,18 +57,18 @@ exports.convertObject = function (_vertexes, _faces, _vertexf, _vertexa, _hr) {
         if (face.normal > 0) {
             // 0番目の頂点座標を計算
             const vertexe0 = viewingConversion(_vertexes[face.vertexes[0]], _vertexf, cosalpha, sinalpha, cosbeta, sinbeta);
-            const X0 = parseInt(_hr*vertexe0.x/vertexe0.z);
-            const Y0 = parseInt(_hr*vertexe0.y/vertexe0.z);
+            const X0 = _hr*vertexe0.x;
+            const Y0 = _hr*vertexe0.y;
 
             // 1番目の頂点座標を計算
             const vertexe1 = viewingConversion(_vertexes[face.vertexes[1]], _vertexf, cosalpha, sinalpha, cosbeta, sinbeta);
-            const X1 = parseInt(_hr*vertexe1.x/vertexe1.z);
-            const Y1 = parseInt(_hr*vertexe1.y/vertexe1.z);
+            const X1 = _hr*vertexe1.x;
+            const Y1 = _hr*vertexe1.y;
 
             // 2番目の頂点座標を計算
             const vertexe2 = viewingConversion(_vertexes[face.vertexes[2]], _vertexf, cosalpha, sinalpha, cosbeta, sinbeta);
-            const X2 = parseInt(_hr*vertexe2.x/vertexe2.z);
-            const Y2 = parseInt(_hr*vertexe2.y/vertexe2.z);
+            const X2 = _hr*vertexe2.x;
+            const Y2 = _hr*vertexe2.y;
             
             // 計算した座標と濃淡を書き出す
             picture.object.push({ X0 : X0, Y0 : Y0, X1 : X1, Y1 : Y1, X2 : X2, Y2 : Y2, shading : face.shading });

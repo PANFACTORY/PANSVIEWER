@@ -32,32 +32,32 @@ function drawObject(_canvas, _color, _obj) {
     ctx.clearRect(0, 0, _canvas.width, _canvas.height);
 
     // draw coordinate
-    const TXC = parseInt(0.2*_canvas.width);
-    const TYC = parseInt(_canvas.height - 0.2*_canvas.width);
+    const TXC = 0.2*_canvas.width;
+    const TYC = _canvas.height - 0.2*_canvas.width;
     const colorlist = [{ R : 255, G : 0, B : 0 }, { R : 0, G : 255, B : 0 }, { R : 0, G : 0, B : 255 }];
     const conorm = 50.0;
 
     for (let i = 0; i < 3; i++) {
         ctx.beginPath();
-        ctx.moveTo(TXC + parseInt(conorm*_obj.coordinate[0].X), TYC - parseInt(conorm*_obj.coordinate[0].Y));
-        ctx.lineTo(TXC + parseInt(conorm*_obj.coordinate[i + 1].X), TYC - parseInt(conorm*_obj.coordinate[i + 1].Y));
+        ctx.moveTo(TXC, TYC);
+        ctx.lineTo(parseInt(TXC + conorm*_obj.coordinate[i].X), parseInt(TYC - conorm*_obj.coordinate[i].Y));
         ctx.closePath();
         ctx.strokeStyle = `rgb(${colorlist[i].R}, ${colorlist[i].G}, ${colorlist[i].B})`;
         ctx.stroke();
     }
     
     // draw object
-    const TXO = _canvas.width/2;
-    const TYO = _canvas.height/2;
+    const TXO = 0.5*_canvas.width;
+    const TYO = 0.5*_canvas.height;
     const R = parseInt(_color.substring(1, 3), 16);
     const G = parseInt(_color.substring(3, 5), 16);
     const B = parseInt(_color.substring(5, 7), 16);
 
     for (let face of _obj.object) {
         ctx.beginPath();
-        ctx.moveTo(TXO + face.X0, TYO - face.Y0);
-        ctx.lineTo(TXO + face.X1, TYO - face.Y1);
-        ctx.lineTo(TXO + face.X2, TYO - face.Y2);
+        ctx.moveTo(parseInt(TXO + face.X0), parseInt(TYO - face.Y0));
+        ctx.lineTo(parseInt(TXO + face.X1), parseInt(TYO - face.Y1));
+        ctx.lineTo(parseInt(TXO + face.X2), parseInt(TYO - face.Y2));
         ctx.closePath();
         ctx.strokeStyle = `rgb(${parseInt(R*face.shading)}, ${parseInt(G*face.shading)}, ${parseInt(B*face.shading)})`;
         ctx.stroke();
