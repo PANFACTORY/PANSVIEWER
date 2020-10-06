@@ -33,10 +33,10 @@ exports.convertObject = function (_vertexes, _faces, _vertexf, _vertexa, _hr) {
     picture.coordinate.push({ X0 : e0.x, Y0 : e0.y, X1 : ez.x, Y1 : ez.y });
 
     //　x-y平面
-    const p0 = viewingConversion({ x : -1.0 + _vertexf.x, y : -1.0 + _vertexf.y, z : 0.0 + _vertexf.z }, _vertexf, cosalpha, sinalpha, cosbeta, sinbeta);
-    const p1 = viewingConversion({ x : 1.0 + _vertexf.x, y : -1.0 + _vertexf.y, z : 0.0 + _vertexf.z }, _vertexf, cosalpha, sinalpha, cosbeta, sinbeta);
-    const p2 = viewingConversion({ x : 1.0 + _vertexf.x, y : 1.0 + _vertexf.y, z : 0.0 + _vertexf.z }, _vertexf, cosalpha, sinalpha, cosbeta, sinbeta);
-    const p3 = viewingConversion({ x : -1.0 + _vertexf.x, y : 1.0 + _vertexf.y, z : 0.0 + _vertexf.z }, _vertexf, cosalpha, sinalpha, cosbeta, sinbeta);
+    const p0 = viewingConversion({ x : -1.0 + _vertexf.x, y : 0.0 + _vertexf.y, z : -1.0 + _vertexf.z }, _vertexf, cosalpha, sinalpha, cosbeta, sinbeta);
+    const p1 = viewingConversion({ x : 1.0 + _vertexf.x, y : 0.0 + _vertexf.y, z : -1.0 + _vertexf.z }, _vertexf, cosalpha, sinalpha, cosbeta, sinbeta);
+    const p2 = viewingConversion({ x : 1.0 + _vertexf.x, y : 0.0 + _vertexf.y, z : 1.0 + _vertexf.z }, _vertexf, cosalpha, sinalpha, cosbeta, sinbeta);
+    const p3 = viewingConversion({ x : -1.0 + _vertexf.x, y : 0.0 + _vertexf.y, z : 1.0 + _vertexf.z }, _vertexf, cosalpha, sinalpha, cosbeta, sinbeta);
     picture.plane.push({ X : p0.x, Y : p0.y });  
     picture.plane.push({ X : p1.x, Y : p1.y });
     picture.plane.push({ X : p2.x, Y : p2.y });
