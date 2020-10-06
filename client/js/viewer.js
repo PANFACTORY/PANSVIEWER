@@ -15,7 +15,7 @@ const input_r = document.getElementById("input_r");
 const input_c = document.getElementById('input_c');
 
 function convertPOV(_r, _theta, _phi) {
-    return { x : _r*Math.sin(_theta)*Math.cos(_phi), y : _r*Math.sin(_theta)*Math.sin(_phi), z : _r*Math.cos(_theta) };
+    return { x : _r*Math.sin(_theta)*Math.sin(_phi), y : _r*Math.cos(_theta), z :  _r*Math.sin(_theta)*Math.cos(_phi) };
 }
 
 function getParams() {
@@ -31,33 +31,46 @@ function drawObject(_canvas, _color, _obj) {
     const ctx = _canvas.getContext('2d');
     ctx.clearRect(0, 0, _canvas.width, _canvas.height);
 
+    const TX = 0.5*_canvas.width;
+    const TY = 0.5*_canvas.height;
+
+    // draw x-y
+    const plnorm = 50.0;
+
+    ctx.beginPath();
+    ctx.moveTo(parseInt(TX + plnorm*_obj.plane[0].X), parseInt(TY - plnorm*_obj.plane[0].Y));
+    ctx.lineTo(parseInt(TX + plnorm*_obj.plane[1].X), parseInt(TY - plnorm*_obj.plane[1].Y));
+    ctx.lineTo(parseInt(TX + plnorm*_obj.plane[2].X), parseInt(TY - plnorm*_obj.plane[2].Y));
+    ctx.lineTo(parseInt(TX + plnorm*_obj.plane[3].X), parseInt(TY - plnorm*_obj.plane[3].Y));
+    ctx.closePath();
+    ctx.strokeStyle = `rgb(${80}, ${80}, ${80})`;
+    ctx.stroke();
+    ctx.fillStyle = `rgba(${80}, ${80}, ${80}, ${0.1})`;
+    ctx.fill();
+
     // draw coordinate
-    const TXC = 0.2*_canvas.width;
-    const TYC = _canvas.height - 0.2*_canvas.width;
     const colorlist = [{ R : 255, G : 0, B : 0 }, { R : 0, G : 255, B : 0 }, { R : 0, G : 0, B : 255 }];
     const conorm = 50.0;
 
     for (let i = 0; i < 3; i++) {
         ctx.beginPath();
-        ctx.moveTo(TXC, TYC);
-        ctx.lineTo(parseInt(TXC + conorm*_obj.coordinate[i].X), parseInt(TYC - conorm*_obj.coordinate[i].Y));
+        ctx.moveTo(parseInt(TX + conorm*_obj.coordinate[i].X0), parseInt(TY - conorm*_obj.coordinate[i].Y0));
+        ctx.lineTo(parseInt(TX + conorm*_obj.coordinate[i].X1), parseInt(TY - conorm*_obj.coordinate[i].Y1));
         ctx.closePath();
         ctx.strokeStyle = `rgb(${colorlist[i].R}, ${colorlist[i].G}, ${colorlist[i].B})`;
         ctx.stroke();
     }
     
     // draw object
-    const TXO = 0.5*_canvas.width;
-    const TYO = 0.5*_canvas.height;
     const R = parseInt(_color.substring(1, 3), 16);
     const G = parseInt(_color.substring(3, 5), 16);
     const B = parseInt(_color.substring(5, 7), 16);
 
     for (let face of _obj.object) {
         ctx.beginPath();
-        ctx.moveTo(parseInt(TXO + face.X0), parseInt(TYO - face.Y0));
-        ctx.lineTo(parseInt(TXO + face.X1), parseInt(TYO - face.Y1));
-        ctx.lineTo(parseInt(TXO + face.X2), parseInt(TYO - face.Y2));
+        ctx.moveTo(parseInt(TX + face.X0), parseInt(TY - face.Y0));
+        ctx.lineTo(parseInt(TX + face.X1), parseInt(TY - face.Y1));
+        ctx.lineTo(parseInt(TX + face.X2), parseInt(TY - face.Y2));
         ctx.closePath();
         ctx.strokeStyle = `rgb(${parseInt(R*face.shading)}, ${parseInt(G*face.shading)}, ${parseInt(B*face.shading)})`;
         ctx.stroke();
