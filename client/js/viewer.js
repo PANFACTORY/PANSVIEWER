@@ -2,9 +2,9 @@ const input_file = document.getElementById('input_file');
 
 const canvas = document.getElementById('canvas');
 
-const input_radius = document.getElementById("input_radius");
-const input_theta = document.getElementById("input_theta");
-const input_phi = document.getElementById("input_phi");
+const input_fx = document.getElementById("input_fx");
+const input_fy = document.getElementById("input_fy");
+const input_fz = document.getElementById("input_fz");
 
 const input_ax = document.getElementById("input_ax");
 const input_ay = document.getElementById("input_ay");
@@ -14,16 +14,12 @@ const input_h = document.getElementById("input_h");
 const input_r = document.getElementById("input_r");
 const input_c = document.getElementById('input_c');
 
-function convertPOV(_r, _theta, _phi) {
-    return { x : _r*Math.sin(_theta)*Math.sin(_phi), y : _r*Math.cos(_theta), z :  _r*Math.sin(_theta)*Math.cos(_phi) };
-}
-
 function getParams() {
     return { 
-        vertexf : convertPOV(input_radius.value, input_theta.value*(Math.PI/180.0), input_phi.value*(Math.PI/180.0)),
-        vertexa : { x : input_ax.value, y : input_ay.value, z : input_az.value }, 
-        h : input_h.value, 
-        r : input_r.value,
+        vertexf : { x : parseFloat(input_fx.value), y : parseFloat(input_fy.value), z : parseFloat(input_fz.value) },
+        vertexa : { x : parseFloat(input_ax.value), y : parseFloat(input_ay.value), z : parseFloat(input_az.value) }, 
+        h : parseFloat(input_h.value), 
+        r : parseFloat(input_r.value),
     };
 }
 
@@ -32,7 +28,7 @@ function drawObject(_canvas, _color, _obj) {
     ctx.clearRect(0, 0, _canvas.width, _canvas.height);
 
     const TX = 0.5*_canvas.width;
-    const TY = 0.5*_canvas.height;
+    const TY = 0.75*_canvas.height;
 
     // draw x-y
     const plnorm = 50.0;
@@ -108,22 +104,81 @@ async function onChangeParams() {
     drawObject(canvas, input_c.value, result);
 }
 
-/*
 let mouseX = "";
 let mouseY = "";
 
+let ey = { x : 0.0, y : 1.0, z : 0.0 };
+
 canvas.addEventListener('mousemove', onMove, false);
-//canvas.addEventListener('mousedown', onClick, false);
+canvas.addEventListener('mousedown', onClick, false);
 //canvas.addEventListener('mouseup', drawEnd, false);
 //canvas.addEventListener('mouseout', drawEnd, false);
 
 function onMove(e) {
     if (e.buttons === 1 || e.witch === 1) {
-        let rect = e.target.getBoundingClientRect();
-        let X = parseInt(e.clientX - rect.left);
-        let Y = parseInt(e.clientY - rect.top);
+        const X = e.clientX - mouseX;
+        const Y = mouseY - e.clientY;
 
-        input_theta.value = X;
+        if (X*X + Y*Y >= 10) {
+            //　視点座標と注視点座標の取得
+            const fx = parseFloat(input_fx.value);
+            const fy = parseFloat(input_fy.value);
+            const fz = parseFloat(input_fz.value);
+            const ax = parseFloat(input_ax.value);
+            const ay = parseFloat(input_ay.value);
+            const az = parseFloat(input_az.value);
+
+            //　カメラ基底ベクトルの生成
+            const ez = { x : fx - ax, y : fy - ay, z : fz - az };
+            const ex = { x : ey.y*ez.z - ey.z*ez.y, y : ey.z*ez.x - ey.x*ez.z, z : ey.x*ez.y - ey.y*ez.x };
+
+            //　マウスの移動方向ベクトル
+            let nx = X*ex.x + Y*ey.x;
+            let ny = X*ex.y + Y*ey.y;
+            let nz = X*ex.z + Y*ey.z;
+            const nnorm = Math.sqrt(nx*nx + ny*ny + nz*nz);
+            nx /= nnorm;
+            ny /= nnorm;
+            nz /= nnorm;
+            
+            //　回転軸ベクトル
+            let rx = ny*ez.z - nz*ez.y;
+            let ry = nz*ez.x - nx*ez.z;
+            let rz = nx*ez.y - ny*ez.x;
+            const rnorm = Math.sqrt(rx*rx + ry*ry + rz*rz);
+            rx /= rnorm;
+            ry /= rnorm;
+            rz /= rnorm;
+            
+            //　視線ベクトルを回転
+            const theta = 2.0*Math.PI/180.0;
+            const rdotv = rx*ez.x + ry*ez.y + rz*ez.z;
+            input_fx.value = ez.x*Math.cos(theta) + (ry*ez.z - rz*ez.y)*Math.sin(theta) + rx*rdotv*(1.0 - Math.cos(theta)) + ax;
+            input_fy.value = ez.y*Math.cos(theta) + (rz*ez.x - rx*ez.z)*Math.sin(theta) + ry*rdotv*(1.0 - Math.cos(theta)) + ay;
+            input_fz.value = ez.z*Math.cos(theta) + (rx*ez.y - ry*ez.x)*Math.sin(theta) + rz*rdotv*(1.0 - Math.cos(theta)) + az;
+
+            //　カメラの基底ベクトルを更新
+            const rdotw = rx*ey.x + ry*ey.y + rz*ey.z;
+            const tmpx = ey.x*Math.cos(theta) + (ry*ey.z - rz*ey.y)*Math.sin(theta) + rx*rdotw*(1.0 - Math.cos(theta));
+            const tmpy = ey.y*Math.cos(theta) + (rz*ey.x - rx*ey.z)*Math.sin(theta) + ry*rdotw*(1.0 - Math.cos(theta));
+            const tmpz = ey.z*Math.cos(theta) + (rx*ey.y - ry*ey.x)*Math.sin(theta) + rz*rdotw*(1.0 - Math.cos(theta));
+            ey.x = tmpx;
+            ey.y = tmpy;
+            ey.z = tmpz;
+
+            //　再描画
+            onChangeParams();
+
+            //　マウス位置の更新
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        }
     }
 }
-*/
+
+function onClick(e) {
+    if (e.witch === 1) {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    }
+}
