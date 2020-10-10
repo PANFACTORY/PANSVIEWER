@@ -18,21 +18,12 @@ let mouseX = "";
 let mouseY = "";
 let mouseT = 1200;
 
-function getParams() {
-    return { 
-        vertexf : pv,
-        vertexa : { x : parseFloat(input_ax.value), y : parseFloat(input_ay.value), z : parseFloat(input_az.value) }, 
-        h : mouseT,
-        ey : ey,
-    };
-}
-
 function drawObject(_canvas, _color, _obj) {
     const ctx = _canvas.getContext('2d');
     ctx.clearRect(0, 0, _canvas.width, _canvas.height);
 
     const TX = 0.5*_canvas.width;
-    const TY = 0.75*_canvas.height;
+    const TY = 0.5*_canvas.height;
 
     // draw x-y
     const plnorm = 50.0;
@@ -82,7 +73,6 @@ function drawObject(_canvas, _color, _obj) {
 async function onChangeFile() {
     if (input_file.files.length) {
         let data = new FormData();
-        data.append('params', JSON.stringify(getParams()));
         data.append('model', input_file.files[0], 'modelfile');
 
         let response = await fetch('./loadmodel', {
@@ -91,13 +81,18 @@ async function onChangeFile() {
         });
         let result = await response.json();
 
-        drawObject(canvas, input_c.value, result);  
+        onChangeParams();
     }
 }
 
 async function onChangeParams() {
     let data = new FormData();
-    data.append('params', JSON.stringify(getParams()));
+    data.append('params', JSON.stringify({ 
+        vertexf : pv,
+        vertexa : { x : parseFloat(input_ax.value), y : parseFloat(input_ay.value), z : parseFloat(input_az.value) }, 
+        h : mouseT,
+        ey : ey,
+    }));
 
     let response = await fetch('./params', {
         method: 'POST',
