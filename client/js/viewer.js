@@ -2,10 +2,6 @@ const input_file = document.getElementById('input_file');
 
 const canvas = document.getElementById('canvas');
 
-const input_fx = document.getElementById("input_fx");
-const input_fy = document.getElementById("input_fy");
-const input_fz = document.getElementById("input_fz");
-
 const input_ax = document.getElementById("input_ax");
 const input_ay = document.getElementById("input_ay");
 const input_az = document.getElementById("input_az");
@@ -14,11 +10,15 @@ const input_h = document.getElementById("input_h");
 const input_r = document.getElementById("input_r");
 const input_c = document.getElementById('input_c');
 
+let pv = { x : 0.0, y : 0.0, z : 1.0 };
 let ey = { x : 0.0, y : 1.0, z : 0.0 };
+
+let mouseX = "";
+let mouseY = "";
 
 function getParams() {
     return { 
-        vertexf : { x : parseFloat(input_fx.value), y : parseFloat(input_fy.value), z : parseFloat(input_fz.value) },
+        vertexf : pv,
         vertexa : { x : parseFloat(input_ax.value), y : parseFloat(input_ay.value), z : parseFloat(input_az.value) }, 
         h : parseFloat(input_h.value), 
         r : parseFloat(input_r.value),
@@ -107,13 +107,8 @@ async function onChangeParams() {
     drawObject(canvas, input_c.value, result);
 }
 
-let mouseX = "";
-let mouseY = "";
-
 canvas.addEventListener('mousemove', onMove, false);
 canvas.addEventListener('mousedown', onClick, false);
-//canvas.addEventListener('mouseup', drawEnd, false);
-//canvas.addEventListener('mouseout', drawEnd, false);
 
 function onMove(e) {
     if (e.buttons === 1 || e.witch === 1) {
@@ -122,15 +117,12 @@ function onMove(e) {
 
         if (X*X + Y*Y >= 10) {
             //　視点座標と注視点座標の取得
-            const fx = parseFloat(input_fx.value);
-            const fy = parseFloat(input_fy.value);
-            const fz = parseFloat(input_fz.value);
             const ax = parseFloat(input_ax.value);
             const ay = parseFloat(input_ay.value);
             const az = parseFloat(input_az.value);
 
             //　カメラ基底ベクトルの生成
-            const ez = { x : fx - ax, y : fy - ay, z : fz - az };
+            const ez = { x : pv.x - ax, y : pv.y - ay, z : pv.z - az };
             const ex = { x : ey.y*ez.z - ey.z*ez.y, y : ey.z*ez.x - ey.x*ez.z, z : ey.x*ez.y - ey.y*ez.x };
 
             //　マウスの移動方向ベクトル
@@ -154,9 +146,9 @@ function onMove(e) {
             //　視線ベクトルを回転
             const theta = 2.0*Math.PI/180.0;
             const rdotv = rx*ez.x + ry*ez.y + rz*ez.z;
-            input_fx.value = ez.x*Math.cos(theta) + (ry*ez.z - rz*ez.y)*Math.sin(theta) + rx*rdotv*(1.0 - Math.cos(theta)) + ax;
-            input_fy.value = ez.y*Math.cos(theta) + (rz*ez.x - rx*ez.z)*Math.sin(theta) + ry*rdotv*(1.0 - Math.cos(theta)) + ay;
-            input_fz.value = ez.z*Math.cos(theta) + (rx*ez.y - ry*ez.x)*Math.sin(theta) + rz*rdotv*(1.0 - Math.cos(theta)) + az;
+            pv.x = ez.x*Math.cos(theta) + (ry*ez.z - rz*ez.y)*Math.sin(theta) + rx*rdotv*(1.0 - Math.cos(theta)) + ax;
+            pv.y = ez.y*Math.cos(theta) + (rz*ez.x - rx*ez.z)*Math.sin(theta) + ry*rdotv*(1.0 - Math.cos(theta)) + ay;
+            pv.z = ez.z*Math.cos(theta) + (rx*ez.y - ry*ez.x)*Math.sin(theta) + rz*rdotv*(1.0 - Math.cos(theta)) + az;
 
             //　カメラの基底ベクトルを更新
             const rdotw = rx*ey.x + ry*ey.y + rz*ey.z;
