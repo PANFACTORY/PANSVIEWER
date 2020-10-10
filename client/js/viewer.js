@@ -6,8 +6,6 @@ const input_ax = document.getElementById("input_ax");
 const input_ay = document.getElementById("input_ay");
 const input_az = document.getElementById("input_az");
 
-const input_h = document.getElementById("input_h");
-const input_r = document.getElementById("input_r");
 const input_c = document.getElementById('input_c');
 
 let pv = { x : 0.0, y : 0.0, z : 1.0 };
@@ -15,13 +13,13 @@ let ey = { x : 0.0, y : 1.0, z : 0.0 };
 
 let mouseX = "";
 let mouseY = "";
+let mouseT = 1200;
 
 function getParams() {
     return { 
         vertexf : pv,
         vertexa : { x : parseFloat(input_ax.value), y : parseFloat(input_ay.value), z : parseFloat(input_az.value) }, 
-        h : parseFloat(input_h.value), 
-        r : parseFloat(input_r.value),
+        h : mouseT,
         ey : ey,
     };
 }
@@ -109,6 +107,7 @@ async function onChangeParams() {
 
 canvas.addEventListener('mousemove', onMove, false);
 canvas.addEventListener('mousedown', onClick, false);
+canvas.addEventListener('mousewheel', onWheel, false);
 
 function onMove(e) {
     if (e.buttons === 1 || e.witch === 1) {
@@ -174,4 +173,9 @@ function onClick(e) {
         mouseX = e.clientX;
         mouseY = e.clientY;
     }
+}
+
+function onWheel(e) {
+    mouseT += 10*e.wheelDelta/120;
+    onChangeParams();
 }
