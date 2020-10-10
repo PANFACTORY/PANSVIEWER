@@ -23,12 +23,12 @@ let faces = new Array();
 app.post('/loadmodel', upload.single('model'), function(req, res) {
     let params = JSON.parse(req.body.params);
     [ vertexes, faces ] = pansload.loadObjectFromPly(req.file.buffer.toString());
-    res.send(JSON.stringify(pansconv.convertObject(vertexes, faces, params.vertexf, params.vertexa, params.h*params.r)));
+    res.send(JSON.stringify(pansconv.convertObject(vertexes, faces, params.vertexf, params.vertexa, params.h*params.r, params.ey)));
 });
 
 app.post('/params', upload.any(), function(req, res) {
     let params = JSON.parse(req.body.params);
-    res.send(JSON.stringify(pansconv.convertObject(vertexes, faces, params.vertexf, params.vertexa, params.h*params.r)));
+    res.send(JSON.stringify(pansconv.convertObject(vertexes, faces, params.vertexf, params.vertexa, params.h*params.r, params.ey)));
 });
 
 app.listen(PORT, function() {

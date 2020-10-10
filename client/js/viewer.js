@@ -14,12 +14,15 @@ const input_h = document.getElementById("input_h");
 const input_r = document.getElementById("input_r");
 const input_c = document.getElementById('input_c');
 
+let ey = { x : 0.0, y : 1.0, z : 0.0 };
+
 function getParams() {
     return { 
         vertexf : { x : parseFloat(input_fx.value), y : parseFloat(input_fy.value), z : parseFloat(input_fz.value) },
         vertexa : { x : parseFloat(input_ax.value), y : parseFloat(input_ay.value), z : parseFloat(input_az.value) }, 
         h : parseFloat(input_h.value), 
         r : parseFloat(input_r.value),
+        ey : ey,
     };
 }
 
@@ -106,8 +109,6 @@ async function onChangeParams() {
 
 let mouseX = "";
 let mouseY = "";
-
-let ey = { x : 0.0, y : 1.0, z : 0.0 };
 
 canvas.addEventListener('mousemove', onMove, false);
 canvas.addEventListener('mousedown', onClick, false);
