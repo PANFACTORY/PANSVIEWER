@@ -1,3 +1,11 @@
+//*****************************************************************************
+//  Title       :   client/js/event.js
+//  Author      :   Tanabe Yuta
+//  Date        :   2020/10/10
+//  Copyright   :   (C)2020 TanabeYuta
+//*****************************************************************************
+
+
 const $input_file = document.getElementById('input_file');
 
 const $canvas = document.getElementById('canvas');
@@ -15,6 +23,10 @@ let mouseX = "";
 let mouseY = "";
 let mouseT = 1200;
 
+
+//*****************************************************************************
+//  描画関数
+//*****************************************************************************
 const drawObject = (_canvas, _color, _obj) => {
     const ctx = _canvas.getContext('2d');
     ctx.clearRect(0, 0, _canvas.width, _canvas.height);
@@ -67,21 +79,10 @@ const drawObject = (_canvas, _color, _obj) => {
     }           
 }
 
-$input_file.addEventListener('change', onChangeFile = async (e) => {
-    if (e.target.files.length) {
-        let data = new FormData();
-        data.append('model', e.target.files[0], 'modelfile');
 
-        let response = await fetch('./loadmodel', {
-            method: 'POST',
-            body: data,
-        });
-        let result = await response.json();
-
-        onChangeParams();
-    }
-}, false);
-
+//*****************************************************************************
+//  描画パラメータ変更イベント関数
+//*****************************************************************************
 const onChangeParams = async () => {
     let data = new FormData();
     data.append('params', JSON.stringify({ 
@@ -100,6 +101,29 @@ const onChangeParams = async () => {
     drawObject($canvas, $input_c.value, result);
 }
 
+
+//*****************************************************************************
+//  ファイル読み込みイベント関数
+//*****************************************************************************
+$input_file.addEventListener('change', onChangeFile = async (e) => {
+    if (e.target.files.length) {
+        let data = new FormData();
+        data.append('model', e.target.files[0], 'modelfile');
+
+        let response = await fetch('./loadmodel', {
+            method: 'POST',
+            body: data,
+        });
+        let result = await response.json();
+
+        onChangeParams();
+    }
+}, false);
+
+
+//*****************************************************************************
+//  マウスムーブイベント関数
+//*****************************************************************************
 $canvas.addEventListener('mousemove', onMove = (e) => {
     if (e.buttons === 1 || e.witch === 1) {
         const X = e.clientX - mouseX;
@@ -155,6 +179,10 @@ $canvas.addEventListener('mousemove', onMove = (e) => {
     }
 }, false);
 
+
+//*****************************************************************************
+//  マウスクリックイベント関数
+//*****************************************************************************
 $canvas.addEventListener('mousedown', onClick = (e) => {
     if (e.witch === 1) {
         mouseX = e.clientX;
@@ -162,6 +190,10 @@ $canvas.addEventListener('mousedown', onClick = (e) => {
     }
 }, false);
 
+
+//*****************************************************************************
+//  マウスホイールイベント関数
+//*****************************************************************************
 $canvas.addEventListener('mousewheel', onWheel = (e) => {
     mouseT += 10*e.wheelDelta/120;
     onChangeParams();

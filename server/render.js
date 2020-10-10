@@ -1,4 +1,14 @@
-// ビュー変換
+//*****************************************************************************
+//  Title       :   server/render.js
+//  Author      :   Tanabe Yuta
+//  Date        :   2020/10/10
+//  Copyright   :   (C)2020 TanabeYuta
+//*****************************************************************************
+
+
+//*****************************************************************************
+// ビュー変換関数
+//*****************************************************************************
 const viewingConversion = (_vertex, _vertexf, _ca, _sa, _cb, _sb, _cg, _sg) => {
     const xe = (_vertex.x - _vertexf.x)*(_ca*_cg - _sa*_sb*_sg) - (_vertex.y - _vertexf.y)*_cb*_sg - (_vertex.z - _vertexf.z)*(_sa*_cg + _ca*_sb*_sg);
     const ye = (_vertex.x - _vertexf.x)*(_ca*_sg + _sa*_sb*_cg) + (_vertex.y - _vertexf.y)*_cb*_cg - (_vertex.z - _vertexf.z)*(_sa*_sg - _ca*_sb*_cg);
@@ -6,7 +16,10 @@ const viewingConversion = (_vertex, _vertexf, _ca, _sa, _cb, _sb, _cg, _sg) => {
     return { x : xe, y : ye, z : ze }
 }
 
+
+//*****************************************************************************
 // オブジェクト2D化関数
+//*****************************************************************************
 exports.convertObject = (_vertexes, _faces, _vertexf, _vertexa, _hr, _ey) => {
     //　描画用座標配列
     let picture = { coordinate : new Array(), plane : new Array(), object : new Array() };
