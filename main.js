@@ -17,17 +17,16 @@ app.get('/', function(req, res) {
     res.sendFile(`${__dirname}/client/html/index.html`);
 });
 
-let vertexes = new Array();
-let faces = new Array();
+let objects = new Array();
 
 app.post('/loadmodel', upload.single('model'), function(req, res) {
-    [ vertexes, faces ] = pansload.loadObjectFromPly(req.file.buffer.toString());
+    objects.push(pansload.loadObjectFromPly(req.file.buffer.toString()));
     res.send(JSON.stringify({ res : "OK" }));
 });
 
 app.post('/params', upload.any(), function(req, res) {
     let params = JSON.parse(req.body.params);
-    res.send(JSON.stringify(pansconv.convertObject(vertexes, faces, params.vertexf, params.vertexa, params.h, params.ey)));
+    res.send(JSON.stringify(pansconv.convertObject(objects, params.vertexf, params.vertexa, params.h, params.ey)));
 });
 
 app.listen(PORT, function() {

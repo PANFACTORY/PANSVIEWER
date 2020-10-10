@@ -45,5 +45,5 @@ exports.loadObjectFromPly = (_rowdata) => {
         faces.push({ vertexes : [ parseInt(linedatas[1]), parseInt(linedatas[2]), parseInt(linedatas[3]) ], normal : 1, shading : 1 });
     }
 
-    return [ vertexes, faces ];
+    return { vertexes : vertexes, faces : faces };
 }
