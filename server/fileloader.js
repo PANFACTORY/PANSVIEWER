@@ -1,5 +1,5 @@
 // .plyファイルからオブジェクトを読み込む関数
-exports.loadObjectFromPly = function (_rowdata) {
+exports.loadObjectFromPly = (_rowdata) => {
     //  頂点数，面の個数の読み込み
     let vertexnum = 0;              //  頂点の個数
     let facenum = 0;                //  面の個数

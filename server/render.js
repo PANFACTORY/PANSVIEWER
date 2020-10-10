@@ -1,5 +1,5 @@
 // ビュー変換
-function viewingConversion(_vertex, _vertexf, _ca, _sa, _cb, _sb, _cg, _sg) {
+const viewingConversion = (_vertex, _vertexf, _ca, _sa, _cb, _sb, _cg, _sg) => {
     const xe = (_vertex.x - _vertexf.x)*(_ca*_cg - _sa*_sb*_sg) - (_vertex.y - _vertexf.y)*_cb*_sg - (_vertex.z - _vertexf.z)*(_sa*_cg + _ca*_sb*_sg);
     const ye = (_vertex.x - _vertexf.x)*(_ca*_sg + _sa*_sb*_cg) + (_vertex.y - _vertexf.y)*_cb*_cg - (_vertex.z - _vertexf.z)*(_sa*_sg - _ca*_sb*_cg);
     const ze = -(_vertex.x - _vertexf.x)*_sa*_cb + (_vertex.y - _vertexf.y)*_sb - (_vertex.z - _vertexf.z)*_ca*_cb;
@@ -7,27 +7,25 @@ function viewingConversion(_vertex, _vertexf, _ca, _sa, _cb, _sb, _cg, _sg) {
 }
 
 // オブジェクト2D化関数
-exports.convertObject = function (_vertexes, _faces, _vertexf, _vertexa, _hr, _ey) {
+exports.convertObject = (_vertexes, _faces, _vertexf, _vertexa, _hr, _ey) => {
     //　描画用座標配列
     let picture = { coordinate : new Array(), plane : new Array(), object : new Array() };
 
     //  ビュー変換係数の算出
-    const vx = _vertexa.x - _vertexf.x;
-    const vy = _vertexa.y - _vertexf.y;
-    const vz = _vertexa.z - _vertexf.z;
-    const vx2vz2 = vx*vx + vz*vz;
-    const vnorm = Math.sqrt(vx2vz2 + vy*vy);
+    const v = { x : _vertexa.x - _vertexf.x, y : _vertexa.y - _vertexf.y, z : _vertexa.z - _vertexf.z };
+    const vx2vz2 = v.x*v.x + v.z*v.z;
+    const vnorm = Math.sqrt(vx2vz2 + v.y*v.y);
     const sqrtvx2vz2 = Math.sqrt(vx2vz2);
-    const cosalpha = -vz/sqrtvx2vz2;
-    const sinalpha = -vx/sqrtvx2vz2;
+    const cosalpha = -v.z/sqrtvx2vz2;
+    const sinalpha = -v.x/sqrtvx2vz2;
     const cosbeta = sqrtvx2vz2/vnorm;
-    const sinbeta = vy/vnorm;
+    const sinbeta = v.y/vnorm;
     const cup = viewingConversion({ x : _ey.x + _vertexf.x, y : _ey.y + _vertexf.y, z : _ey.z + _vertexf.z }, _vertexf, cosalpha, sinalpha, cosbeta, sinbeta, 1.0, 0.0);
     const cupnorm = Math.sqrt(cup.x*cup.x + cup.y*cup.y);
     const cosgamma = cup.y/cupnorm;
     const singamma = cup.x/cupnorm;
 
-    // 座標軸
+    //　座標軸
     const e0 = viewingConversion({ x : 0.0 + _vertexf.x, y : 0.0 + _vertexf.y, z : 0.0 + _vertexf.z }, _vertexf, cosalpha, sinalpha, cosbeta, sinbeta, cosgamma, singamma);
     const ex = viewingConversion({ x : 1.0 + _vertexf.x, y : 0.0 + _vertexf.y, z : 0.0 + _vertexf.z }, _vertexf, cosalpha, sinalpha, cosbeta, sinbeta, cosgamma, singamma);
     const ey = viewingConversion({ x : 0.0 + _vertexf.x, y : 1.0 + _vertexf.y, z : 0.0 + _vertexf.z }, _vertexf, cosalpha, sinalpha, cosbeta, sinbeta, cosgamma, singamma);
@@ -49,22 +47,24 @@ exports.convertObject = function (_vertexes, _faces, _vertexf, _vertexa, _hr, _e
     // 陰面処理と濃淡計算
     for (let face of _faces) {
         //  稜線ベクトルの算出
-        const e1x = _vertexes[face.vertexes[1]].x - _vertexes[face.vertexes[0]].x;  
-        const e1y = _vertexes[face.vertexes[1]].y - _vertexes[face.vertexes[0]].y;  
-        const e1z = _vertexes[face.vertexes[1]].z - _vertexes[face.vertexes[0]].z;
-        const e2x = _vertexes[face.vertexes[2]].x - _vertexes[face.vertexes[1]].x;  
-        const e2y = _vertexes[face.vertexes[2]].y - _vertexes[face.vertexes[1]].y;  
-        const e2z = _vertexes[face.vertexes[2]].z - _vertexes[face.vertexes[1]].z;
+        const e1 = { 
+            x : _vertexes[face.vertexes[1]].x - _vertexes[face.vertexes[0]].x, 
+            y : _vertexes[face.vertexes[1]].y - _vertexes[face.vertexes[0]].y, 
+            z : _vertexes[face.vertexes[1]].z - _vertexes[face.vertexes[0]].z 
+        };
+        const e2 = { 
+            x : _vertexes[face.vertexes[2]].x - _vertexes[face.vertexes[1]].x, 
+            y : _vertexes[face.vertexes[2]].y - _vertexes[face.vertexes[1]].y, 
+            z : _vertexes[face.vertexes[2]].z - _vertexes[face.vertexes[1]].z 
+        };
         //  法線ベクトルの算出
-        const nx = e1y*e2z - e1z*e2y;
-        const ny = e1z*e2x - e1x*e2z;
-        const nz = e1x*e2y - e1y*e2x;
+        const n = { x : e1.y*e2.z - e1.z*e2.y, y : e1.z*e2.x - e1.x*e2.z, z : e1.x*e2.y - e1.y*e2.x };
         //  視線ベクトルと法線ベクトルの内積
-        const vn = vx*nx + vy*ny + vz*nz;
+        const vn = v.x*n.x + v.y*n.y + v.z*n.z;
         face.normal = vn < 0 ? 1 : (vn == 0 ? 0 : -1); 
         //　面の濃淡を計算
-        const ct = -vn/(Math.sqrt(nx*nx + ny*ny + nz*nz)*vnorm);
-        face.shading = (ct + 1.0)/2.0;
+        const ct = -vn/(Math.sqrt(n.x*n.x + n.y*n.y + n.z*n.z)*vnorm);
+        face.shading = 0.5*(ct + 1.0);
     }
 
     // 面のビュー変換と投影変換
