@@ -1,6 +1,9 @@
 const input_file = document.getElementById('input_file');
 
 const canvas = document.getElementById('canvas');
+canvas.addEventListener('mousemove', onMove, false);
+canvas.addEventListener('mousedown', onClick, false);
+canvas.addEventListener('mousewheel', onWheel, false);
 
 const input_ax = document.getElementById("input_ax");
 const input_ay = document.getElementById("input_ay");
@@ -104,10 +107,6 @@ async function onChangeParams() {
 
     drawObject(canvas, input_c.value, result);
 }
-
-canvas.addEventListener('mousemove', onMove, false);
-canvas.addEventListener('mousedown', onClick, false);
-canvas.addEventListener('mousewheel', onWheel, false);
 
 function onMove(e) {
     if (e.buttons === 1 || e.witch === 1) {
