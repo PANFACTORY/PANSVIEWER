@@ -70,23 +70,10 @@ exports.convertObject = function (_vertexes, _faces, _vertexf, _vertexa, _hr, _e
     // 面のビュー変換と投影変換
     for (let face of _faces) {
         if (face.normal > 0) {
-            // 0番目の頂点座標を計算
-            const vertexe0 = viewingConversion(_vertexes[face.vertexes[0]], _vertexf, cosalpha, sinalpha, cosbeta, sinbeta, cosgamma, singamma);
-            const X0 = _hr*vertexe0.x;
-            const Y0 = _hr*vertexe0.y;
-
-            // 1番目の頂点座標を計算
-            const vertexe1 = viewingConversion(_vertexes[face.vertexes[1]], _vertexf, cosalpha, sinalpha, cosbeta, sinbeta, cosgamma, singamma);
-            const X1 = _hr*vertexe1.x;
-            const Y1 = _hr*vertexe1.y;
-
-            // 2番目の頂点座標を計算
-            const vertexe2 = viewingConversion(_vertexes[face.vertexes[2]], _vertexf, cosalpha, sinalpha, cosbeta, sinbeta, cosgamma, singamma);
-            const X2 = _hr*vertexe2.x;
-            const Y2 = _hr*vertexe2.y;
-            
-            // 計算した座標と濃淡を書き出す
-            picture.object.push({ X0 : X0, Y0 : Y0, X1 : X1, Y1 : Y1, X2 : X2, Y2 : Y2, shading : face.shading });
+            const s0 = viewingConversion(_vertexes[face.vertexes[0]], _vertexf, cosalpha, sinalpha, cosbeta, sinbeta, cosgamma, singamma);
+            const s1 = viewingConversion(_vertexes[face.vertexes[1]], _vertexf, cosalpha, sinalpha, cosbeta, sinbeta, cosgamma, singamma);
+            const s2 = viewingConversion(_vertexes[face.vertexes[2]], _vertexf, cosalpha, sinalpha, cosbeta, sinbeta, cosgamma, singamma);
+            picture.object.push({ X0 : _hr*s0.x, Y0 : _hr*s0.y, X1 : _hr*s1.x, Y1 : _hr*s1.y, X2 : _hr*s2.x, Y2 : _hr*s2.y, shading : face.shading });
         }
     }
 
