@@ -1,5 +1,5 @@
 //*****************************************************************************
-//  Title       :   client/js/event.js
+//  Title       :   src/event.js
 //  Author      :   Tanabe Yuta
 //  Date        :   2020/10/10
 //  Copyright   :   (C)2020 TanabeYuta
